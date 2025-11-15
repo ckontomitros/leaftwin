@@ -2,8 +2,9 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Float } from "@react-three/drei";
 import { Plant } from "@/lib/plantData";
+import { useRef } from "react";
 
 interface Plant3DModelProps {
   plant: Plant;
@@ -11,32 +12,48 @@ interface Plant3DModelProps {
 
 export default function Plant3DModel({ plant }: Plant3DModelProps) {
   const healthColor = 
-    plant.health === "healthy" ? "#16A34A" :
+    plant.health === "healthy" ? "#22C55E" :
     plant.health === "warning" ? "#F59E0B" : "#EF4444";
 
   return (
-    <div className="h-64 md:h-80 rounded-xl overflow-hidden bg-gradient-to-b from-sky-100 to-sky-50">
+    <div className="h-80 rounded-xl overflow-hidden bg-gradient-to-b from-sky-100 to-sky-50 shadow-inner">
       <Canvas>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} />
-        <OrbitControls enablePan={false} />
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={1} />
+        <PerspectiveCamera makeDefault position={[0, 1, 6]} />
+        <OrbitControls enablePan={false} maxPolarAngle={Math.PI / 2} />
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[10, 10, 5]} intensity={1.2} castShadow />
 
-        {/* Trunk */}
-        <mesh position={[0, -0.5, 0]}>
-          <cylinderGeometry args={[0.15, 0.2, 1.5]} />
-          <meshStandardMaterial color="#8B4513" />
-        </mesh>
+        <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
+          {/* Trunk */}
+          <mesh position={[0, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.18, 0.25, 2]} />
+            <meshStandardMaterial color="#8B4513" />
+          </mesh>
 
-        {/* Foliage - changes with health */}
-        <mesh position={[0, 0.8, 0]}>
-          <sphereGeometry args={[1.2, 16, 16]} />
-          <meshStandardMaterial color={healthColor} opacity={plant.health === "critical" ? 0.6 : 0.9} transparent />
-        </mesh>
+          {/* Foliage */}
+          <mesh position={[0, 1.3, 0]} castShadow>
+            <sphereGeometry args={[1.4, 20, 20]} />
+            <meshStandardMaterial 
+              color={healthColor} 
+              opacity={plant.health === "critical" ? 0.6 : 0.95}
+              transparent
+            />
+          </mesh>
+
+          {/* Extra leaves */}
+          <mesh position={[0.5, 1.5, 0.3]} rotation={[0, 0, 0.3]}>
+            <coneGeometry args={[0.6, 1.2, 8]} />
+            <meshStandardMaterial color={healthColor} />
+          </mesh>
+          <mesh position={[-0.6, 1.4, -0.2]} rotation={[0, 0, -0.3]}>
+            <coneGeometry args={[0.5, 1, 8]} />
+            <meshStandardMaterial color={healthColor} />
+          </mesh>
+        </Float>
 
         {/* Soil */}
-        <mesh position={[0, -1.3, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[1.5]} />
+        <mesh position={[0, -1.1, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <circleGeometry args={[2]} />
           <meshStandardMaterial color="#8B4513" />
         </mesh>
       </Canvas>

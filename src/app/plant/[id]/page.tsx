@@ -1,22 +1,36 @@
 // src/app/plant/[id]/page.tsx
 import { notFound } from "next/navigation";
 import Plant3DModel from "@/component/Plant3DModel";
-import { getPlantById, type Plant } from "@/lib/plantData";
+import { getPlantById, getAllPlants, type  Plant } from "@/lib/plantData";
 import Link from "next/link";
 
 interface PageProps {
   params: { id: string };
 }
 
+// THIS IS THE KEY: Pre-render all plant pages
 export async function generateStaticParams() {
   const plants = await getAllPlants();
-  return plants.map((p) => ({ id: p.id }));
+  return plants.map((plant) => ({
+    id: plant.id,
+  }));
 }
 
 export default async function PlantPage({ params }: PageProps) {
-  const plant: Plant | undefined = await getPlantById(params.id);
+  const { id } = await params;
 
-  if (!plant) notFound();
+  // Debug: Log the ID
+  console.log("Plant ID from params:", id);
+
+  if (!id) {
+    notFound();
+  }
+
+  const plant = await getPlantById(id);
+
+  if (!plant) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
@@ -35,31 +49,25 @@ export default async function PlantPage({ params }: PageProps) {
 
       <main className="max-w-7xl mx-auto p-6">
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* 3D Model */}
           <div>
-            <h2 className="text-2xl font-bold text-green-800 mb-4">
-              {plant.name}
-            </h2>
+            <h2 className="text-2xl font-bold text-green-800 mb-4">{plant.name}</h2>
             <Plant3DModel plant={plant} />
           </div>
 
-          {/* Info Panel */}
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-green-700">Πληροφορίες Φυτού</h3>
               <div className="mt-3 space-y-3">
+                <InfoRow label="ID" value={plant.id} />
                 <InfoRow label="Είδος" value={plant.species} />
-                <InfoRow label="Κατάσταση Υγείας" value={
-                  <HealthBadge health={plant.health} />
-                } />
-                <InfoRow label="Υγρασία Εδάφους" value={`${plant.soilMoisture}%`} />
+                <InfoRow label="Κατάσταση" value={<HealthBadge health={plant.health} />} />
+                <InfoRow label="Υγρασία" value={`${plant.soilMoisture}%`} />
                 <InfoRow label="Πότισμα σε" value={
                   <span className={plant.waterIn === 0 ? "text-red-600 font-bold" : ""}>
-                    {plant.waterIn === 0 ? "ΣΗΜΕΡΑ!" : `${plant.waterIn} ημέρες`}
+                    {plant.waterIn === 0 ? "ΣΗΜΕΡΑ!" : `${plant.waterIn} ημ.`}
                   </span>
                 } />
                 <InfoRow label="Φυτεύτηκε" value={new Date(plant.plantedDate).toLocaleDateString("el-GR")} />
-                <InfoRow label="Τελευταίο Πότισμα" value={new Date(plant.lastWatered).toLocaleDateString("el-GR")} />
               </div>
             </div>
 

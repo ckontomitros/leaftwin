@@ -58,5 +58,6 @@ export type Plant = {
   }
   export async function getPlantById(id: string): Promise<Plant | undefined> {
     const plants = await getAllPlants();
+    console.log(id)
     return plants.find(p => p.id === id);
   }
