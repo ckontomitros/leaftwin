@@ -2,7 +2,7 @@
 "use client";
 import { useState, useRef } from "react";
 import MapPicker from "@/component/MapPicker";
-import { recommendPlants } from "@/lib/recommendPlants";
+import { recommendPlants } from "@/lib/recomment";
 import { addPlantedPlant } from "@/lib/plantStorage";
 import Link from "next/link";
 
@@ -15,14 +15,14 @@ export default function Home() {
   const [selectedRec, setSelectedRec] = useState<any | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const handleSelect = async ({ lng, lat }: { lng: number; lat: number }) => {
-    setLocation({ lng, lat });
-    setLoading(true);
-    const recs = await recommendPlants(lat, lng);
-    setPlants(recs);
-    setLoading(false);
-    setSelectedRec(null); // reset panel
-  };
+ // Inside handleSelect
+const handleSelect = async ({ lng, lat }: { lng: number; lat: number }) => {
+  setLocation({ lng, lat });
+  setLoading(true);
+  const recs = await recommendPlants(lat, lng);
+  setPlants(recs);
+  setLoading(false);
+};
 
   const handlePlantHere = () => {
     if (!location || !selectedRec) return;

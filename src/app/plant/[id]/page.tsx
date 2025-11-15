@@ -33,20 +33,7 @@ export default async function PlantPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      {/* Header */}
-      <header className="bg-green-600 text-white p-6 shadow-xl">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-90">
-            <LeafLogo />
-            <h1 className="text-2xl font-bold">LeafTwin</h1>
-          </Link>
-          <Link href="/dashboard" className="text-sm underline">
-            ← Πίσω στο Dashboard
-          </Link>
-        </div>
-      </header>
-
+    
       <main className="max-w-7xl mx-auto p-6">
         <div className="grid lg:grid-cols-2 gap-8">
           <div>
@@ -79,7 +66,6 @@ export default async function PlantPage({ params }: PageProps) {
           </div>
         </div>
       </main>
-    </div>
   );
 }
 
